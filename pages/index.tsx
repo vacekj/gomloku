@@ -1,7 +1,8 @@
 import Layout from "components/Layout";
 import { useEffect, useState } from "react";
-import { Button } from "@chakra-ui/core";
+import { Alert, Button } from "@chakra-ui/core";
 import styles from "./index.module.css";
+import { useWebSocket } from "react-use-websocket/dist/lib/use-websocket";
 type BoardState = CellValue[];
 
 interface BoardProps {
@@ -169,6 +170,8 @@ const IndexPage = () => {
 		}
 	}, [JSON.stringify(moves)]);
 
+	const { lastMessage, sendMessage } = useWebSocket("ws://localhost:8000/ws");
+
 	return (
 		<Layout title="Gomloku">
 			<div className={"m-5"}>
@@ -180,6 +183,14 @@ const IndexPage = () => {
 				>
 					Clear board state
 				</Button>
+				<Button
+					onClick={() => {
+						sendMessage(JSON.stringify(moves[moves.length - 1]));
+					}}
+				>
+					Send ws message
+				</Button>
+				<Alert>{lastMessage?.data}</Alert>
 				<h1 className="text-3xl">Gomloku</h1>
 				<Board
 					onClickCell={(id) => {
